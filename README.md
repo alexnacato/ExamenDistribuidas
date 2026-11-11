@@ -1,34 +1,15 @@
 # Examen Parcial 1 - Chat en tiempo real con WebSockets y Docker
 
-Aplicacion de chat compuesta por un **servidor** (que corre dentro de un
-contenedor Docker) y **dos clientes** (que corren en terminales de VS Code).
-Se usa la libreria **websockets** con **asyncio**: cada participante puede
-enviar y recibir mensajes al mismo tiempo, sin esperar turnos, y el servidor
-difunde los mensajes entre todos.
-
-## Participantes
-
-- **Servidor**: recibe conexiones, envia mensajes y los distribuye entre los clientes.
-- **Cliente 1**: envia y recibe mensajes.
-- **Cliente 2**: envia y recibe mensajes.
-
-## Requisitos
-
-- Docker (Docker Desktop) instalado y en ejecucion.
-- Python 3 con la libreria `websockets` para los clientes:
-  ```bash
-  pip install "websockets>=14,<16"
-  ```
-- Visual Studio Code con dos terminales.
 
 ## Como ejecutar la aplicacion
 
-### 1. Iniciar el servidor dentro del contenedor Docker
+### 1. Compilar y levantar el servidor dentro del contenedor Docker
 
-Desde la carpeta del proyecto ejecutar:
+Desde la carpeta del proyecto:
 
 ```bash
-docker compose up
+docker compose up -d --build
+docker attach servidor_chat
 ```
 
 Deberia verse:
@@ -38,11 +19,16 @@ Servidor WebSocket escuchando en ws://localhost:8765
 Esperando conexiones de los clientes...
 ```
 
-El `docker-compose.yml` construye la imagen (Dockerfile) y publica el puerto
-**8765** del contenedor en el puerto **8765** de la computadora anfitriona.
+- `--build` compila la imagen del servidor (Dockerfile + requirements.txt)
+  la primera vez; las siguientes veces puede omitirse.
+- La terminal donde hiciste `docker attach` es la consola del servidor:
+  Aqui podemos escribir mensajes y presionar **Enter** para enviarlos a
+  los clientes como `[SERVIDOR]`.
+- Para salir del attach sin apagar el servidor: `Ctrl+P` y luego `Ctrl+Q`.
+- Para detener el servidor: `Ctrl+C` (o `docker compose down`).
 
-> Nota: en PowerShell usa `docker compose up` (con espacio). Si tu version de
-> Docker es antigua, usa `docker-compose up`.
+El `docker-compose.yml` construye la imagen y publica el puerto **8765** del
+contenedor en el puerto **8765** de la computadora anfitriona.
 
 ### 2. Conectar Cliente 1 desde una terminal de VS Code
 
@@ -68,9 +54,24 @@ Cuando pida el nombre, escribir: `CLIENTE 2`
 
 - Escribir un mensaje en cualquier terminal y presionar **Enter**: el mensaje
   se difunde a todos los participantes.
-- El servidor tambien puede escribir: en la terminal donde corre Docker,
+- El servidor tambien puede escribir: en la terminal del `docker attach`,
   escribir un mensaje y presionar **Enter**, y los dos clientes lo recibiran.
 - Para terminar un cliente escribir `salir`.
+
+## Participantes
+
+- **Servidor**: recibe conexiones, envia mensajes y los distribuye entre los clientes.
+- **Cliente 1**: envia y recibe mensajes.
+- **Cliente 2**: envia y recibe mensajes.
+
+## Requisitos
+
+- Docker (Docker Desktop) instalado y en ejecucion.
+- Python 3 con la libreria `websockets` para los clientes:
+  ```bash
+  pip install "websockets>=14,<16"
+  ```
+- Visual Studio Code con dos terminales.
 
 
 
@@ -84,4 +85,3 @@ Cuando pida el nombre, escribir: `CLIENTE 2`
 | `Dockerfile`        | Imagen del servidor con la libreria websockets                     |
 | `requirements.txt`  | Dependencias (websockets)                                          |
 | `README.md`         | Estas instrucciones                                                |
-# ExamenDistribuidas
